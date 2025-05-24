@@ -1,0 +1,837 @@
+{
+	"info": {
+		"_postman_id": "3dc4e31c-9ccb-44a3-81be-9663aaf4f42b",
+		"name": "Ecommerce",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38093042"
+	},
+	"item": [
+		{
+			"name": "CreateDelete",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData =pm.response.json();\r",
+									"var token = jsonData.token;\r",
+									"pm.environment.set(\"Token\",token);\r",
+									"pm.environment.set(\"UserId\",jsonData.userId);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Verify Login Message Displayed Successfully\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"Login Successfully\");\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"CreateDelete\") {\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"CreateDelete\"\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userEmail\": \"{{userEmail}}\",\r\n    \"userPassword\": \"{{userPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ecom/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"CreateDelete\") {\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"CreateDelete\"\r",
+									"// }\r",
+									"\r",
+									"\r",
+									"var ProductName = pm.iterationData.get(\"Product Name\");\r",
+									"pm.environment.set(\"productName\",ProductName);\r",
+									"var ProductCategory = pm.iterationData.get(\"Product Category\");\r",
+									"pm.environment.set(\"productCategory\",ProductCategory);\r",
+									"var ProductSubCategory = pm.iterationData.get(\"Product SubCategory\");\r",
+									"pm.environment.set(\"productSubCategory\",ProductSubCategory);\r",
+									"var ProductPrice = pm.iterationData.get(\"Product Price\");\r",
+									"pm.environment.set(\"productPrice\",ProductPrice);\r",
+									"var ProductDescription = pm.iterationData.get(\"Product Description\");\r",
+									"pm.environment.set(\"productDescription\",ProductDescription);\r",
+									"var ProductFor = pm.iterationData.get(\"Product For\");\r",
+									"pm.environment.set(\"productFor\",ProductFor);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Verify Product Added Message Displayed Successfully\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"Product Added Successfully\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "productName",
+									"value": "{{productName}}",
+									"type": "text"
+								},
+								{
+									"key": "productAddedBy",
+									"value": "{{UserId}}",
+									"type": "text"
+								},
+								{
+									"key": "productCategory",
+									"value": "{{productCategory}}",
+									"type": "text"
+								},
+								{
+									"key": "productSubCategory",
+									"value": "{{productSubCategory}}",
+									"type": "text"
+								},
+								{
+									"key": "productPrice",
+									"value": "{{productPrice}}",
+									"type": "text"
+								},
+								{
+									"key": "productDescription",
+									"value": "{{productDescription}}",
+									"type": "text"
+								},
+								{
+									"key": "productFor",
+									"value": "{{productFor}}",
+									"type": "text"
+								},
+								{
+									"key": "productImage",
+									"type": "file",
+									"src": "/C:/Users/karti/OneDrive/Desktop/img.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://rahulshettyacademy.com/api/ecom/product/add-product",
+							"protocol": "https",
+							"host": [
+								"rahulshettyacademy",
+								"com"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"product",
+								"add-product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var ProductName = pm.iterationData.get(\"Product Name\");\r",
+									"var ProductId,ProductName,ProductCategory,ProductSubCategory,ProductPrice,ProductDescription,ProductImage,ProductFor;\r",
+									"for(let i=0;i<jsonData.count;i++){\r",
+									"   if(jsonData.data[i].productName === ProductName){\r",
+									"     ProductId = jsonData.data[i]._id;\r",
+									"     ProductName = jsonData.data[i].productName;\r",
+									"     ProductCategory = jsonData.data[i].productCategory;\r",
+									"     ProductSubCategory = jsonData.data[i].productSubCategory;\r",
+									"     ProductPrice = jsonData.data[i].productPrice;\r",
+									"     ProductDescription = jsonData.data[i].productDescription;\r",
+									"     ProductImage = jsonData.data[i].productImage;\r",
+									"     ProductFor = jsonData.data[i].productFor;\r",
+									"     pm.environment.set(\"productId\",ProductId);\r",
+									"     pm.environment.set(\"productName\",ProductName);\r",
+									"     pm.environment.set(\"productCategory\",ProductCategory);\r",
+									"     pm.environment.set(\"productSubCategory\",ProductSubCategory);\r",
+									"     pm.environment.set(\"productPrice\",ProductPrice);\r",
+									"     pm.environment.set(\"productDescription\",ProductDescription);\r",
+									"     pm.environment.set(\"productImage\",ProductImage);\r",
+									"     pm.environment.set(\"productFor\",ProductFor);\r",
+									"   }\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Verify All Products Fetched Message Displayed Successfully\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"All Products fetched Successfully\");\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"CreateDelete\") {\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"CreateDelete\"\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Token}}",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productName\": \"\",\r\n    \"minPrice\": null,\r\n    \"maxPrice\": null,\r\n    \"productCategory\": [],\r\n    \"productSubCategory\": [],\r\n    \"productFor\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ecom/product/get-all-products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"product",
+								"get-all-products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add To Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Verify Product Added To Cart Message Displayed Successfully\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"Product Added To Cart\");\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"CreateDelete\") {\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"CreateDelete\"\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"_id\": \"{{UserId}}\",\r\n \"product\": {\r\n    \"_id\": \"{{productId}}\",\r\n    \"productName\": \"{{productName}}\",\r\n    \"productCategory\": \"{{productCategory}}\",\r\n    \"productSubCategory\": \"{{productSubCategory}}\",\r\n    \"productPrice\": {{productPrice}},\r\n    \"productDescription\": \"{{productDescription}}\",\r\n    \"productImage\": \"{{productImage}}\",\r\n    \"productRating\": \"0\",\r\n    \"productTotalOrders\": \"0\",\r\n    \"productStatus\": true,\r\n    \"productFor\": \"{{productFor}}\",\r\n    \"productAddedBy\": \"admin@gmail.com\",\r\n    \"__v\": 0\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ecom/user/add-to-cart",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"user",
+								"add-to-cart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete From Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Verify Product Removed from Cart\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"Product Removed from cart\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"CreateDelete\") {\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"CreateDelete\"\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/ecom/user/remove-from-cart/{{UserId}}/{{productId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"user",
+								"remove-from-cart",
+								"{{UserId}}",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Verify Product Removed from Application\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"Product Deleted Successfully\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"CreateDelete\") {\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"CreateDelete\"\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/ecom/product/delete-product/{{productId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"product",
+								"delete-product",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ecom",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData =pm.response.json();\r",
+									"var token = jsonData.token;\r",
+									"pm.environment.set(\"Token\",token);\r",
+									"pm.environment.set(\"UserId\",jsonData.userId);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Verify Login Message Displayed Successfully\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"Login Successfully\");\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"Ecom\") {\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"Ecom\"\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userEmail\": \"{{userEmail}}\",\r\n    \"userPassword\": \"{{userPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ecom/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"var ProductName = pm.iterationData.get(\"Product Name\");\r",
+									"var ProductId,ProductName,ProductCategory,ProductSubCategory,ProductPrice,ProductDescription,ProductImage,ProductFor;\r",
+									"for(let i=0;i<jsonData.count;i++){\r",
+									"   if(jsonData.data[i].productName === ProductName){\r",
+									"     ProductId = jsonData.data[i]._id;\r",
+									"     ProductName = jsonData.data[i].productName;\r",
+									"     ProductCategory = jsonData.data[i].productCategory;\r",
+									"     ProductSubCategory = jsonData.data[i].productSubCategory;\r",
+									"     ProductPrice = jsonData.data[i].productPrice;\r",
+									"     ProductDescription = jsonData.data[i].productDescription;\r",
+									"     ProductImage = jsonData.data[i].productImage;\r",
+									"     ProductFor = jsonData.data[i].productFor;\r",
+									"     pm.environment.set(\"productId\",ProductId);\r",
+									"     pm.environment.set(\"productName\",ProductName);\r",
+									"     pm.environment.set(\"productCategory\",ProductCategory);\r",
+									"     pm.environment.set(\"productSubCategory\",ProductSubCategory);\r",
+									"     pm.environment.set(\"productPrice\",ProductPrice);\r",
+									"     pm.environment.set(\"productDescription\",ProductDescription);\r",
+									"     pm.environment.set(\"productImage\",ProductImage);\r",
+									"     pm.environment.set(\"productFor\",ProductFor);\r",
+									"   }\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Verify All Products Fetched Message Displayed Successfully\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"All Products fetched Successfully\");\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"Ecom\") {\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"CreateDelete\"\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Token}}",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productName\": \"\",\r\n    \"minPrice\": null,\r\n    \"maxPrice\": null,\r\n    \"productCategory\": [],\r\n    \"productSubCategory\": [],\r\n    \"productFor\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ecom/product/get-all-products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"product",
+								"get-all-products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add To Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Verify Product Added To Cart Message Displayed Successfully\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"Product Added To Cart\");\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"Ecom\") {\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"CreateDelete\"\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"_id\": \"{{UserId}}\",\r\n \"product\": {\r\n    \"_id\": \"{{productId}}\",\r\n    \"productName\": \"{{productName}}\",\r\n    \"productCategory\": \"{{productCategory}}\",\r\n    \"productSubCategory\": \"{{productSubCategory}}\",\r\n    \"productPrice\": {{productPrice}},\r\n    \"productDescription\": \"{{productDescription}}\",\r\n    \"productImage\": \"{{productImage}}\",\r\n    \"productRating\": \"0\",\r\n    \"productTotalOrders\": \"0\",\r\n    \"productStatus\": true,\r\n    \"productFor\": \"{{productFor}}\",\r\n    \"productAddedBy\": \"admin@gmail.com\",\r\n    \"__v\": 0\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ecom/user/add-to-cart",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"user",
+								"add-to-cart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"Ecom\") {\r",
+									"//     console.log(\"source:\", pm.iterationData.get(\"source\"));\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"CreateDelete\"\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var orderId = pm.response.json().orders;\r",
+									"pm.environment.set(\"OrderId\",orderId);\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Verify Order Placed Message Displayed Successfully\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"Order Placed Successfully\");\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orders\": [\r\n        {\r\n            \"country\": \"{{country}}\",\r\n            \"productOrderedId\": \"{{productId}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ecom/order/create-order",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"order",
+								"create-order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Verify Order Fetched Message Displayed Successfully\",function(){\r",
+									" pm.expect(jsonData.message).to.eql(\"Orders fetched for customer Successfully\");\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// if (pm.iterationData.get(\"source\") !== \"Ecom\") {\r",
+									"//     pm.execution.setNextRequest(null);  // This will skip the request if \"source\" is not \"CreateDelete\"\r",
+									"// }\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/ecom/order/get-orders-details?id={{OrderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ecom",
+								"order",
+								"get-orders-details"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{OrderId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
